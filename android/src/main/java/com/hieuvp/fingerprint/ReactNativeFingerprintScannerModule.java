@@ -176,7 +176,7 @@ public class ReactNativeFingerprintScannerModule
 
     private String getSensorError() {
         BiometricManager biometricManager = BiometricManager.from(mReactContext);
-        int authResult = biometricManager.canAuthenticate();
+        int authResult = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG);
 
         if (authResult == BiometricManager.BIOMETRIC_SUCCESS) {
             return null;
@@ -187,9 +187,11 @@ public class ReactNativeFingerprintScannerModule
             return "FingerprintScannerNotEnrolled";
         } else if (authResult == BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE) {
             return "FingerprintScannerNotAvailable";
+        } else if (authResult == BiometricManager.BIOMETRIC_STATUS_UNKNOWN) {
+            return legacyGetErrorMessage();
         }
 
-        return null;
+        return "FingerprintScannerUnknownError";
     }
 
     @ReactMethod
