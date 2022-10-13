@@ -132,8 +132,8 @@ public class ReactNativeFingerprintScannerModule
                         .setDescription(description)
                         .setSubtitle(subtitle)
                         .setTitle(title)
+                        .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                         .build();
-
                     bioPrompt.authenticate(promptInfo);
                 }
             });
