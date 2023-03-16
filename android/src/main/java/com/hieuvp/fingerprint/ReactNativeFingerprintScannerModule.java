@@ -142,14 +142,15 @@ public class ReactNativeFingerprintScannerModule
                                 .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
                                 .build();
 
-                        Cipher cipher = null;
                         try {
-                            cipher = cryptoHelper.getCipher();
-                            if (cipher != null) {
-                                bioPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher));
-                            } else {
-                                bioPrompt.authenticate(promptInfo);
+                            if (currentAndroidVersion() >= 30) {
+                                Cipher cipher = cryptoHelper.getCipher();
+                                if (cipher != null) {
+                                    bioPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher));
+                                    return;
+                                }
                             }
+                            bioPrompt.authenticate(promptInfo);
                         } catch (Exception e) {
                             e.printStackTrace();
                             promise.reject(biometricPromptErrName(CUSTOM_ERROR_PERMANENTLY_INVALIDATED), TYPE_BIOMETRICS);
@@ -223,7 +224,10 @@ public class ReactNativeFingerprintScannerModule
         if (requiresLegacyAuthentication()) {
             legacyAuthenticate(promise);
         } else {
-            final String errorName = getSensorError();
+            String errorName = getSensorError();
+            if (errorName == null) {
+                errorName = legacyGetErrorMessage();
+            }
             if (errorName != null) {
                 promise.reject(errorName, TYPE_BIOMETRICS);
                 ReactNativeFingerprintScannerModule.this.release();
