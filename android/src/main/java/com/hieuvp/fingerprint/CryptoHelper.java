@@ -41,6 +41,9 @@ public class CryptoHelper {
 
     public boolean checkCipherResult(Cipher result) {
         SharedPreferences preferences = applicationContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
+        if (!preferences.contains(KEYSTORE_IV_NAME)) {
+            return true;
+        }
         String cachedIV = preferences.getString(KEYSTORE_IV_NAME, "");
         String resultIV = byteArrayToHex(result.getIV());
         return Objects.equals(cachedIV, resultIV);

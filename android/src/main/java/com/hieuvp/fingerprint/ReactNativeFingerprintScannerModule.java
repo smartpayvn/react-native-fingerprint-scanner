@@ -77,6 +77,10 @@ public class ReactNativeFingerprintScannerModule
         return currentAndroidVersion() < 23;
     }
 
+    private boolean requiresCryptoAuthentication() {
+        return currentAndroidVersion() >= 30;
+    }
+
     public class AuthCallback extends BiometricPrompt.AuthenticationCallback {
         private Promise promise;
 
@@ -144,7 +148,7 @@ public class ReactNativeFingerprintScannerModule
                                 .build();
 
                         try {
-                            if (currentAndroidVersion() >= 30) {
+                            if (requiresCryptoAuthentication()) {
                                 Cipher cipher = cryptoHelper.getCipher();
                                 if (cipher != null) {
                                     bioPrompt.authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher));
