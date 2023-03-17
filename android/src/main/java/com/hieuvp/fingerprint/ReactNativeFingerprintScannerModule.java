@@ -267,6 +267,9 @@ public class ReactNativeFingerprintScannerModule
 
         // current API
         String errorName = getSensorError();
+        if (errorName == null) {
+            errorName = legacyGetErrorMessage();
+        }
         if (errorName != null) {
             promise.reject(errorName, TYPE_BIOMETRICS);
         } else {
