@@ -1,6 +1,7 @@
 package com.hieuvp.fingerprint;
 
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
@@ -240,7 +241,7 @@ public class ReactNativeFingerprintScannerModule
 
     @ReactMethod
     public synchronized void release() {
-        if (requiresLegacyAuthentication()) {
+        if (requiresLegacyAuthentication() || mFingerprintIdentify != null) {
             getFingerprintIdentify().cancelIdentify();
             mFingerprintIdentify = null;
         }
@@ -259,6 +260,7 @@ public class ReactNativeFingerprintScannerModule
             String errorMessage = legacyGetErrorMessage();
             if (errorMessage != null) {
                 promise.reject(errorMessage, TYPE_FINGERPRINT_LEGACY);
+                ReactNativeFingerprintScannerModule.this.release();
             } else {
                 promise.resolve(TYPE_FINGERPRINT_LEGACY);
             }
@@ -272,6 +274,7 @@ public class ReactNativeFingerprintScannerModule
         }
         if (errorName != null) {
             promise.reject(errorName, TYPE_BIOMETRICS);
+            ReactNativeFingerprintScannerModule.this.release();
         } else {
             promise.resolve(TYPE_BIOMETRICS);
         }
