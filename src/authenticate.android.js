@@ -1,9 +1,14 @@
 import { NativeModules } from "react-native";
 import createError from "./createError";
+import { requiresLegacyAuthentication } from "./config";
 
 const { ReactNativeFingerprintScanner } = NativeModules;
 
 const authCurrent = (title, subTitle, description, cancelButton, resolve, reject) => {
+  if (requiresLegacyAuthentication) {
+    reject(createError("FingerprintScannerNotSupported"));
+    return;
+  }
   ReactNativeFingerprintScanner.authenticate(title, subTitle, description, cancelButton)
     .then(() => {
       resolve(true);
