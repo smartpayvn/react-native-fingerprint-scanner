@@ -1,24 +1,17 @@
-import React, { Component } from 'react';
-import {
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-  AppState
-} from 'react-native';
-import FingerprintScanner from 'react-native-fingerprint-scanner';
+import React, { Component } from "react";
+import { Image, Text, TouchableOpacity, View, AppState } from "react-native";
+import FingerprintScanner from "react-native-fingerprint-scanner";
 
-import styles from './Application.container.styles';
-import FingerprintPopup from './FingerprintPopup.component';
+import styles from "./Application.container.styles";
+import FingerprintPopup from "./FingerprintPopup.component";
 
 class Application extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
       errorMessage: undefined,
       biometric: undefined,
-      popupShowed: false
+      popupShowed: false,
     };
   }
 
@@ -31,38 +24,40 @@ class Application extends Component {
   };
 
   componentDidMount() {
-    AppState.addEventListener('change', this.handleAppStateChange);
+    AppState.addEventListener("change", this.handleAppStateChange);
     // Get initial fingerprint enrolled
     this.detectFingerprintAvailable();
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this.handleAppStateChange);
+    AppState.removeEventListener("change", this.handleAppStateChange);
   }
 
   detectFingerprintAvailable = () => {
-    FingerprintScanner
-      .isSensorAvailable()
-      .catch(error => this.setState({ errorMessage: error.message, biometric: error.biometric }));
-  }
+    FingerprintScanner.isSensorAvailable().catch((error) => {
+      console.log(error);
+      this.setState({ errorMessage: error.message, biometric: error.biometric });
+    });
+  };
 
   handleAppStateChange = (nextAppState) => {
-    if (this.state.appState && this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+    if (
+      this.state.appState &&
+      this.state.appState.match(/inactive|background/) &&
+      nextAppState === "active"
+    ) {
       FingerprintScanner.release();
       this.detectFingerprintAvailable();
     }
     this.setState({ appState: nextAppState });
-  }
+  };
 
   render() {
     const { errorMessage, biometric, popupShowed } = this.state;
 
     return (
       <View style={styles.container}>
-
-        <Text style={styles.heading}>
-          React Native Fingerprint Scanner
-        </Text>
+        <Text style={styles.heading}>React Native Fingerprint Scanner</Text>
         <Text style={styles.subheading}>
           https://github.com/hieuvp/react-native-fingerprint-scanner
         </Text>
@@ -72,7 +67,7 @@ class Application extends Component {
           onPress={this.handleFingerprintShowed}
           disabled={!!errorMessage}
         >
-          <Image source={require('./assets/finger_print.png')} />
+          <Image source={require("./assets/finger_print.png")} />
         </TouchableOpacity>
 
         {errorMessage && (
@@ -87,7 +82,6 @@ class Application extends Component {
             handlePopupDismissed={this.handleFingerprintDismissed}
           />
         )}
-
       </View>
     );
   }
